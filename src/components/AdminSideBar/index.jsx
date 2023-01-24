@@ -1,4 +1,5 @@
 import React from 'react';
+import pagesPath from '../../system/constants/pagesPath';
 
 function AdminSideBar() {
   return (
@@ -6,7 +7,7 @@ function AdminSideBar() {
       <a className="appearance-none text-white-light" href="/dashboard">
         Dashboard
       </a>
-      <a className="appearance-none text-white" href="/">
+      <a className="appearance-none text-white" href={pagesPath.dashboardBlogs}>
         Blog
       </a>
 

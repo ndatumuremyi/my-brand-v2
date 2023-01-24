@@ -1,10 +1,81 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import ReactQuill from 'react-quill';
+import swal from 'sweetalert';
 import Footer from '../../../components/Footer';
 import '../../../css/popupButtons.css';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import 'react-quill/dist/quill.snow.css';
 import AdminTopNav from '../../../components/AdminTopNav';
 import AdminSideBar from '../../../components/AdminSideBar';
+import useRouter from '../../../system/utils/useRouter';
+import { deleteItem, getOneBlog } from '../../../system/utils/backend';
+import endpoints from '../../../system/constants/endpoints';
+import { getHeaders } from '../../../system/utilities';
+import pagesPath from '../../../system/constants/pagesPath';
 
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, false] }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+    [
+      { list: 'ordered' },
+      { list: 'bullet' },
+      { indent: '-1' },
+      { indent: '+1' },
+    ],
+    ['link', 'image'],
+    ['clean'],
+  ],
+};
+
+const formats = [
+  'header',
+  'bold',
+  'italic',
+  'underline',
+  'strike',
+  'blockquote',
+  'list',
+  'bullet',
+  'indent',
+  'link',
+  'image',
+];
 function NewBlogActivity() {
+  const router = useRouter();
+  const [convertedText, setConvertedText] = React.useState('');
+  const [id] = React.useState(router.query.id);
+  const [blog, setBlog] = React.useState(undefined);
+  useEffect(() => {
+    if (id) {
+      getOneBlog(endpoints.BLOGS, id).then((result) => {
+        setBlog(result);
+      });
+    }
+  }, [id]);
+  useEffect(() => {
+    if (blog) {
+      setConvertedText(blog.description);
+    }
+  }, [blog]);
+
+  const deleteBlog = (event) => {
+    event.preventDefault();
+    if (!id) {
+      return;
+    }
+    try {
+      deleteItem(`${endpoints.BLOGS}/${id}`, getHeaders()).then((result) => {
+        console.log(result);
+        swal('Delete successful!', 'deleting blog complete', 'success').then(() => {
+          router.push(pagesPath.dashboardBlogs);
+        });
+      });
+    } catch (error) {
+      swal('Something went wrong!', `${error.message}`, 'error');
+    }
+  };
   return (
     <div id="main_content" className="flex flex-col page-content">
       <AdminTopNav />
@@ -24,8 +95,7 @@ function NewBlogActivity() {
                 arrow_back
               </a>
               <h2 className="text-brand-color text-3xl">
-                <span id="title_blog">Edit</span>
-                {' '}
+                <span id="title_blog">{id ? 'Edit' : 'Create a new '}</span>
                 Blog
               </h2>
             </div>
@@ -36,6 +106,7 @@ function NewBlogActivity() {
             <label className="flex flex-col gap-3">
               <span className="text-brand-color">Title</span>
               <input
+                defaultValue={blog?.title}
                 name="title"
                 id="title_field"
                 className="bg-white border-none rounded-lg px-9 py-4 w-full"
@@ -46,7 +117,14 @@ function NewBlogActivity() {
             </label>
             <div className="flex flex-col gap-3">
               <span className="text-brand-color">Description</span>
-              <div className="bg-white border-none rounded-lg px-9 py-4 w-full" id="blog_editor" />
+              <ReactQuill
+                theme="snow"
+                modules={modules}
+                formats={formats}
+                value={convertedText}
+                onChange={setConvertedText}
+                className="bg-white border-none rounded-lg px-9 h-full py-4 w-full"
+              />
               <span id="description_error" className="max-w-xs text-red-light left-3 bottom-0 error" />
             </div>
 
@@ -56,9 +134,10 @@ function NewBlogActivity() {
               <select
                 id="category_field"
                 name="category"
+                defaultValue="tech"
                 className="bg-white border-none rounded-lg px-9 py-4 w-full"
               >
-                <option value="tech" selected className="bg-white">Tech</option>
+                <option value="tech" className="bg-white">Tech</option>
                 <option value="life" className="bg-white">Life</option>
                 <option value="others" className="bg-white">Others</option>
               </select>
@@ -97,7 +176,7 @@ function NewBlogActivity() {
                 Save changes
               </button>
               <span className="line mt-12 mb-2" />
-              <button type="button" id="delete_blog" className="text-red px-5 py-5 bg-white_blue_light rounded-xl">
+              <button onClick={deleteBlog} type="button" id="delete_blog" className="text-red px-5 py-5 bg-white_blue_light rounded-xl">
                 Delete post
               </button>
             </div>

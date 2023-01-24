@@ -1,10 +1,56 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import swal from 'sweetalert';
+import axios from 'axios';
+import { loginFields } from '../../system/constants/fields';
+import { checkValidation, setAttributes, validate } from '../../system/utils/validation';
+import Constants from '../../system/constants';
+import endpoints from '../../system/constants/endpoints';
+import Secure from '../../system/secureLs';
+import keys from '../../system/constants/keys';
+import useRouter from '../../system/utils/useRouter';
 
 function LoginPage() {
+  const router = useRouter();
+  useEffect(() => {
+    loginFields.forEach((eachField) => {
+      setAttributes(eachField);
+      validate(eachField);
+    });
+  }, []);
+
+  function onSubmit(event) {
+    // if the email field is valid, we let the form submit
+    const formData = new FormData(event.target);
+    const isFormValid = checkValidation(loginFields);
+    event.preventDefault();
+    if (isFormValid) {
+      const dataSend = {};
+      // eslint-disable-next-line no-restricted-syntax
+      for (const each of formData) {
+        // eslint-disable-next-line prefer-destructuring
+        dataSend[each[0]] = each[1];
+      }
+      axios
+        .post(`${Constants.DEFAULT_API}${endpoints.LOGIN}`, dataSend)
+        .then((response) => {
+          console.log('response', response);
+          const {
+            data: { token, data },
+          } = response;
+          // setProfile({ ...user });
+          Secure.setToken(token);
+          Secure.set(keys.USER_INFO, { token, data });
+          router.push('/dashboard');
+        }).catch((error) => {
+          console.error(error);
+          swal('Something went wrong!', `${error.message}`, 'error').catch((err) => { console.error(err); });
+        });
+    }
+  }
   return (
     <div className="bg-brand_bold flex justify-center items-center h-screen">
-      <div className="flex flex-col w-380 h-582 gap-2 bg-white rounded-2xl items-center py-5 px-5">
+      <div className="flex flex-col w-380 gap-2 bg-white rounded-2xl items-center py-5 px-5">
         <Link to="/" className="no-underline no-underline">
           <img
             width="48"
@@ -24,9 +70,10 @@ function LoginPage() {
           Enter your email and password below
         </span>
         <form
+          onSubmit={onSubmit}
           id="login_form"
           noValidate
-          className="flex flex-col mt-5 gap-5 w-full text-black-light"
+          className="flex flex-col mt-5 gap-2 w-full text-black-light"
         >
           {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label className="flex flex-col">

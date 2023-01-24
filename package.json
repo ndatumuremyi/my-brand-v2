@@ -6,11 +6,16 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
+    "axios": "^1.2.3",
     "prop-types": "^15.8.1",
+    "query-string": "^8.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-quill": "^2.0.0",
     "react-router-dom": "^6.7.0",
     "react-scripts": "5.0.1",
+    "secure-ls": "^1.2.6",
+    "sweetalert": "^2.1.2",
     "web-vitals": "^2.1.0"
   },
   "scripts": {
@@ -40,6 +45,7 @@
     ]
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.8",
     "eslint": "^8.23.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.5.0",
@@ -50,7 +56,6 @@
     "eslint-plugin-react": "^7.31.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "global": "^4.4.0",
-    "prettier": "^2.8.3",
-    "autoprefixer": "^10.4.8"
+    "prettier": "^2.8.3"
   }
 }

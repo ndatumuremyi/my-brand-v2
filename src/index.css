@@ -7,7 +7,7 @@
   padding: 0;
 
 }
-#blog_single_view, #blog_single_view_client,#comment_container, #messageClone{
+#blog_single_view, #messageClone{
   display: none;
 }
 body{

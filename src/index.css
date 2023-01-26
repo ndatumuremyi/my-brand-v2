@@ -641,7 +641,9 @@ footer::after{
 .top-0{
   top: 0;
 }
-
+.overflow-wrap {
+  overflow-wrap: break-word;
+}
 .-translate-x-1\/2
 {
   transform: translateX(-50%);
@@ -677,6 +679,9 @@ footer::after{
 }
 .max-w-xs {
   max-width: 20rem; /* 320px */
+}
+.max-w-5{
+  max-width: 5rem;
 }
 .mr-auto{
   margin-right: auto;

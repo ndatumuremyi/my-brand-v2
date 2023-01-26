@@ -151,3 +151,36 @@ export const commentFields = [
     ],
   },
 ];
+
+export const createBlogFields = [
+  {
+    name: 'title',
+    field: 'title_field',
+    error: 'title_error',
+    conditions: [
+      {
+        name: 'required',
+        value: true,
+      },
+      {
+        name: 'minlength',
+        value: 3,
+      },
+      {
+        name: 'maxlength',
+        value: 100,
+      },
+    ],
+  },
+  {
+    name: 'image',
+    field: 'image_field',
+    error: 'image_error',
+    conditions: [
+      {
+        name: 'required',
+        value: true,
+      },
+    ],
+  },
+];

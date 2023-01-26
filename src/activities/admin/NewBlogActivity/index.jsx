@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import ReactQuill from 'react-quill';
 import swal from 'sweetalert';
@@ -9,10 +9,14 @@ import 'react-quill/dist/quill.snow.css';
 import AdminTopNav from '../../../components/AdminTopNav';
 import AdminSideBar from '../../../components/AdminSideBar';
 import useRouter from '../../../system/utils/useRouter';
-import { deleteItem, getOneBlog } from '../../../system/utils/backend';
+import {
+  add, deleteItem, getOneBlog, update,
+} from '../../../system/utils/backend';
 import endpoints from '../../../system/constants/endpoints';
 import { getHeaders } from '../../../system/utilities';
 import pagesPath from '../../../system/constants/pagesPath';
+import { createBlogFields } from '../../../system/constants/fields';
+import { checkValidation, setAttributes, validate } from '../../../system/utils/validation';
 
 const modules = {
   toolbar: [
@@ -42,11 +46,25 @@ const formats = [
   'link',
   'image',
 ];
+function isDescriptionValid(text) {
+  return text.length > 20;
+}
+function getDescriptionErrorMessage(text) {
+  if (!isDescriptionValid(text)) {
+    return 'min length is 20';
+  }
+  return '';
+}
 function NewBlogActivity() {
+  const imageNameRef = useRef();
   const router = useRouter();
   const [convertedText, setConvertedText] = React.useState('');
   const [id] = React.useState(router.query.id);
   const [blog, setBlog] = React.useState(undefined);
+  const [descriptionError, setDescriptionError] = useState('');
+  useEffect(() => {
+    setDescriptionError(getDescriptionErrorMessage(convertedText));
+  }, [convertedText]);
   useEffect(() => {
     if (id) {
       getOneBlog(endpoints.BLOGS, id).then((result) => {
@@ -57,8 +75,31 @@ function NewBlogActivity() {
   useEffect(() => {
     if (blog) {
       setConvertedText(blog.description);
+      if (imageNameRef?.current) {
+        imageNameRef.current.textContent = blog.image;
+      }
     }
   }, [blog]);
+  useEffect(() => {
+    createBlogFields.forEach((eachField) => {
+      setAttributes(eachField);
+      validate(eachField);
+    });
+  }, []);
+  useEffect(() => {
+    try {
+      const imageField = document.getElementById('image_field');
+      imageField.onchange = () => {
+        console.log(imageField.value);
+        const split = imageField.value.split('\\');
+        if (imageNameRef?.current) {
+          imageNameRef.current.textContent = split[split.length - 1];
+        }
+      };
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
 
   const deleteBlog = (event) => {
     event.preventDefault();
@@ -66,8 +107,7 @@ function NewBlogActivity() {
       return;
     }
     try {
-      deleteItem(`${endpoints.BLOGS}/${id}`, getHeaders()).then((result) => {
-        console.log(result);
+      deleteItem(`${endpoints.BLOGS}/${id}`, getHeaders()).then(() => {
         swal('Delete successful!', 'deleting blog complete', 'success').then(() => {
           router.push(pagesPath.dashboardBlogs);
         });
@@ -76,12 +116,57 @@ function NewBlogActivity() {
       swal('Something went wrong!', `${error.message}`, 'error');
     }
   };
+  const onSubmit = (event) => {
+    const formData = new FormData(event.target);
+    formData.append('description', convertedText);
+
+    const copyForm = new FormData(event.target);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const each of copyForm) {
+      if (each[0] === 'image') {
+        if (each[1].name === '') {
+          formData.delete(each[0]);
+        }
+      } else if (each[1] === '') {
+        formData.delete(each[0]);
+      }
+    }
+    try {
+      if (id) {
+        update(`${endpoints.BLOGS}/${id}`, formData, getHeaders()).then(() => {
+          swal('Blog Updated!', 'you will be directed to dashboard', 'success').then(() => {
+            router.push(pagesPath.dashboardBlogs);
+          });
+        });
+      } else {
+        add(endpoints.BLOGS, formData, getHeaders()).then(() => {
+          swal('Blog saved!', 'go to dashboard to view them', 'success').then(() => {
+            router.push(pagesPath.dashboardBlogs);
+          });
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      swal('Something went wrong!', 'It looks like, '
+        + 'there is something not going well', 'error');
+    }
+  };
   return (
     <div id="main_content" className="flex flex-col page-content">
       <AdminTopNav />
       <div className="flex">
         <AdminSideBar />
         <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            const isFormValid = checkValidation(createBlogFields);
+            const isDescriptionV = isDescriptionValid(convertedText);
+            if ((!isFormValid || !isDescriptionV) && !id) {
+              swal('Something went wrong!', 'Enter valid values for all fields', 'error');
+              return;
+            }
+            onSubmit(event);
+          }}
           id="create_edit_blog"
           className="flex-1 flex justify-between gap-4 flex-wrap items-start py-5 px-9 bg-F1F3F9"
           noValidate
@@ -125,7 +210,9 @@ function NewBlogActivity() {
                 onChange={setConvertedText}
                 className="bg-white border-none rounded-lg px-9 h-full py-4 w-full"
               />
-              <span id="description_error" className="max-w-xs text-red-light left-3 bottom-0 error" />
+              <span id="description_error" className="max-w-xs text-red-light error active">
+                {descriptionError}
+              </span>
             </div>
 
             {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
@@ -146,7 +233,7 @@ function NewBlogActivity() {
           <div className="flex flex-col gap-7">
             <div className="flex flex-col">
               <span className="text-brand-color"> Featured Image</span>
-              <span id="image_name" className="text-brand-color max-w-sm" />
+              <span ref={imageNameRef} id="image_name" className="text-brand-color overflow-wrap max-w-sm" />
 
               {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
               <label

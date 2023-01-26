@@ -7,6 +7,7 @@ import useRouter from '../../system/utils/useRouter';
 import { getOneBlog } from '../../system/utils/backend';
 import CommentView from '../../components/_Parties/blogsPage/CommentView';
 import AddNewCommentForm from '../../components/_Parties/blogsPage/AddNewCommentForm';
+import LikeBlog from '../../components/_Parties/blogsPage/LikeBlog';
 
 function BlogView() {
   const router = useRouter();
@@ -54,10 +55,7 @@ function BlogView() {
               <span>Monday May 20</span>
             </div>
           </div>
-          <span id="clickToLike" className="text-brand-color flex flex-col items-center gap-1 cursor-pointer">
-            <span className="material-symbols-outlined">favorite</span>
-            <span id="likes_count">{blog.likes?.count}</span>
-          </span>
+          <LikeBlog likeCount={blog.likes?.count} />
         </div>
         <div dangerouslySetInnerHTML={{ __html: blog.description }} id="description" className="max-w-2xl flex flex-col gap-4 text-black-light" />
 

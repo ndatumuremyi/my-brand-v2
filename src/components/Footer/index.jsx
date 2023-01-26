@@ -12,7 +12,7 @@ function Footer() {
           <h3 className="text-4xl">Let&lsquo;s Talk!</h3>
           <h4>Contact info</h4>
           <p className="text-white-light">paternenught@gmail.com</p>
-          <p className="text-white-light">UR-CST Kigali</p>
+          {/* <p className="text-white-light">UR-CST Kigali</p> */}
           <p className="text-white-light">+250 786 388 768</p>
         </div>
         <div id="what_i_do" className="flex flex-col gap-7">

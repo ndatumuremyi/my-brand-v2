@@ -1,5 +1,5 @@
-import MyWorks from '../../activities/MyWorks';
 import pagesPath from '../../system/constants/pagesPath';
+import MyProjects from '../../activities/MyProjects';
 
 const loginPageRoute = {
   exact: true,
@@ -7,7 +7,7 @@ const loginPageRoute = {
   protected: false,
   guestOnly: false,
   path: pagesPath.myWorks,
-  component: MyWorks,
+  component: MyProjects,
 };
 
 export default loginPageRoute;

@@ -7,19 +7,19 @@ import GeneralHeader2 from '../../components/GeneralHeader2';
 function MyWorks() {
   useEffect(() => {
     const text1Options = [
-      'Personal Portfolio, HTML5, CSS3 & JS',
-      'The system to help you to locate available parking space around you',
+      'Rinda',
+      'yean',
 
     ];
     const text2Options = [
-      'November 23',
-      'May 20',
+      '2023',
+      '2022',
 
     ];
     const colorOptions = ['#EBB9D2', '#FE9968', '#7FE0EB', '#6CE5B1'];
     const imageOptions = [
-      './assets/images/my_brand_landing.png',
-      './assets/images/eparking%20design%201.png',
+      './assets/images/projects/rinda.png',
+      './assets/images/projects/yean.png',
     ];
     let i = 0;
     const currentOptionText1 = document.getElementById('current-option-text1');
@@ -89,7 +89,7 @@ function MyWorks() {
         <div className="project-div overflow-y-auto bg-brand_color_light py-20 flex flex-col rounded-xl gap-7">
           <div className="my_work bg-white_blue_light flex gap-7 items-center items-stretch rounded-lg ">
 
-            <div id="carousel-wrapper" className="carousel-wrapper relative">
+            <div id="carousel-wrapper" className="carousel-wrapper relative w-80-vw">
               <div id="menu" className="menu px-20 relative ">
                 <div id="current-option" className="current-option">
                   <span id="current-option-text1" className="current-option-text1" data-previous-text="" data-next-text="" />

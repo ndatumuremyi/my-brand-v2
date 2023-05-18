@@ -1,5 +1,6 @@
 import React from 'react';
 import TopNav from '../TopNav';
+import ResumeButton from './Resume';
 
 function HeaderLanding() {
   return (
@@ -24,7 +25,7 @@ function HeaderLanding() {
             <br />
             products with great user experiences.
           </p>
-          <button type="button" className="button_light">Resume</button>
+          <ResumeButton />
         </div>
         <div id="brand_image_div" className="brand_image_div mt-12">
           <img
